@@ -47,6 +47,26 @@ export default function Controls() {
     })
 
     // send cleanedMsgs to backend
+    try {
+      const response = await fetch('https://newhire-backend.onrender.com/interviewRecord', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          interviewRecord: cleanedMsgs,  // Pass the cleaned messages as the interview record
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send interview record');
+      }
+
+      const data = await response.json();
+      console.log('Interview record sent successfully:', data);
+    } catch (error) {
+      console.error('Error sending messages:', error);
+    }
   }
 
   return (
