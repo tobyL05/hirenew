@@ -51,10 +51,6 @@ export default function Controls() {
     // send cleanedMsgs to backend
   }
 
-  async function sendExpressions() {
-    console.log(getExpressions())
-  }
-
   return (
     <div
       className={cn(
