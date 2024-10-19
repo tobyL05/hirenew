@@ -15,7 +15,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
 
   return (
     <div className={"grow flex flex-col"}>
-      <h1>Interview for UID: {uid}</h1>
+      {/* <h1>Interview for UID: {uid}</h1> */}
       <Chat accessToken={accessToken} uid={uid} />
     </div>
   );

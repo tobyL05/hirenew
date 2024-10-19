@@ -47,7 +47,7 @@ const InterviewStart = ({ company_name, role }: { company_name: string; role: st
                         stroke={"currentColor"}
                       />
                     </span>
-                    <span>Start Call</span>
+                    <span>Start Interview</span>
                   </Button>
                 </div>
               </motion.div>

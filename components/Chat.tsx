@@ -6,6 +6,7 @@ import Controls from "./Controls";
 import StartCall from "./StartCall";
 import { useEffect, useState, useRef, ComponentRef } from "react";
 import { VideoChat } from "./video-chat";
+import { sysPrompt } from "@/content";
 
 export default function ClientComponent({
   accessToken,
@@ -53,9 +54,9 @@ export default function ClientComponent({
     fetchInterviewDetails();
   }, [uid]);
 
-  if (loading) {
-    return <div>Loading interview details...</div>;
-  }
+//   if (loading) {
+//     return <div>Loading interview details...</div>;
+//   }
 
   return (
     <div
@@ -69,7 +70,7 @@ export default function ClientComponent({
         sessionSettings={{
             type: "session_settings",
             // generate a systemprompt later
-            // systemPrompt: "Address the user by their name {{name}}. In the beginning, tell the candidate that they are interviewing for the {{role}} role at {{company}}. Wait for a response from the candidate. If the candidate is speaking, do not speak.", // generate based on candidate's resume and job desc
+            systemPrompt: sysPrompt,
             variables: {
                 name: interviewData.name,
                 role: interviewData.role,
