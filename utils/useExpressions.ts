@@ -1,8 +1,9 @@
 import { ConnectionMessage, JSONMessage } from "@humeai/voice-react"
+import { useState } from "react";
 import * as R from "remeda";
 
 const useExpressions = () => {
-    const expressions = new Map(); 
+    const [expressions, setExpressions] = useState<Map<string, number[]>>(new Map())
 
     const getCurrentExpression = (message: JSONMessage | ConnectionMessage) => {
         if (message && message.type === "user_message") {
@@ -17,21 +18,23 @@ const useExpressions = () => {
                 R.take(3),
             );
 
-            top3.map(([key, value]) => {
-                if (expressions.has(key)) {
-                    let prev = expressions.get(key)
-                    prev.push(value)
-                    expressions.set(key,prev)
-                } else {
-                    expressions.set(key, [value])
-                }
-            })
+            const updatedExpressions = new Map(expressions); // Create a new Map to avoid direct mutation
 
-            // send expressions to backend somehow. process here first (take avg)?
+            top3.forEach(([key, value]) => {
+                if (updatedExpressions.has(key)) {
+                    let prev = updatedExpressions.get(key) || [];
+                    prev.push(value);
+                    updatedExpressions.set(key, prev);
+                } else {
+                    updatedExpressions.set(key, [value]);
+                }
+            });
+            console.log(updatedExpressions)
+            setExpressions(updatedExpressions); // Update the state with the new Map
         }
     }
 
-    return { getCurrentExpression }
+    return { expressions, getCurrentExpression }
 
 }
 

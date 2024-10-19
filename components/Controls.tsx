@@ -7,6 +7,7 @@ import { Toggle } from "./ui/toggle";
 import MicFFT from "./MicFFT";
 import { cn } from "@/utils";
 import useWebcam from "@/utils/useWebcam";
+import useExpressions from "@/utils/useExpressions";
 
 interface cleaned_message {
   type: string
@@ -17,6 +18,7 @@ export default function Controls() {
   const { disconnect, status, isMuted, unmute, mute, micFft } = useVoice();
   const { stopWebcam } = useWebcam()
   const { messages } = useVoice()
+  const { expressions } = useExpressions()
 
   async function sendMessages() {
     const cleanedMsgs: cleaned_message[] = []
@@ -42,11 +44,8 @@ export default function Controls() {
       type: prevmsg.type,
       message: prevmsg.message.content!
     })
-    cleanedMsgs.forEach((msg) => {
-      console.log(msg.message);
-    })
+    // console.log(cleanedMsgs)
 
-    // send cleanedMsgs to backend
     try {
       const response = await fetch('https://newhire-backend.onrender.com/interviewRecord', {
         method: 'POST',
@@ -67,6 +66,12 @@ export default function Controls() {
     } catch (error) {
       console.error('Error sending messages:', error);
     }
+  }
+
+  async function sendExpressions() {
+    console.log(expressions)
+     
+    // send expressions to backend
   }
 
   return (
@@ -118,11 +123,11 @@ export default function Controls() {
 
             <Button
               className={"flex items-center gap-1"}
-              onClick={async () => {
-                console.log("hello")
+              onClick={() => {
                 stopWebcam();
                 disconnect();
                 sendMessages();
+                sendExpressions()
               }}
               variant={"destructive"}
             >
