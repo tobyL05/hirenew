@@ -18,7 +18,6 @@ interface FormData {
 
 export function JobInfoForm() {
   const [fields, setFields] = useState<string[]>([''])
-  const [result, setResult] = useState<string[]>([])
   const [formData, setFormData] = useState<FormData>({
     name: '',
     jobTitle: '',
@@ -26,6 +25,8 @@ export function JobInfoForm() {
     companyName: '',
     additionalQs: ['']
   })
+
+  const [uid, setUid] = useState<string | null>(null) // For showing UID response
 
   const addField = () => { setFields([...fields, ''])
   }
@@ -35,7 +36,7 @@ export function JobInfoForm() {
     setFields(newFields)
   }
 
-  // additional fields 
+  // additional fields
   const handleAdditionalFields = (index: number, value: string) => {
     const newFields = [...fields]
     newFields[index] = value
@@ -50,17 +51,42 @@ export function JobInfoForm() {
     }))
   }
 
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const nonEmptyFields = fields.filter(field => field.trim() !== '')
-    setFormData(prevData => ({
-        ...prevData,
-        additionalQs: nonEmptyFields
-    }))
-    console.log(formData)
-  }
 
+    // Concatenate additional questions
+    const concatenatedQs = fields.filter(field => field.trim() !== '')
+
+    // Prepare the payload for the API call
+    const payload = {
+      name: formData.name,
+      role: formData.jobTitle,
+      jobDescription: formData.jobDescription,
+      company: formData.companyName,
+      questions: concatenatedQs
+    }
+
+    try {
+      const response = await fetch('https://newhire-backend.onrender.com/questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        // Store the returned UID and show it to the user
+        setUid(result.id)
+      } else {
+        console.error("Failed to submit data:", result)
+      }
+    } catch (error) {
+      console.error("Error:", error)
+    }
+  }
 
   return (
     <Card className="w-full max-w-3xl mx-auto">
@@ -119,27 +145,27 @@ export function JobInfoForm() {
             <br></br>
             <Label>Additional Questions</Label>
             {fields.map((field, index) => (
-                <div key={index} className="flex items-center">
+              <div key={index} className="flex items-center">
                 <Label htmlFor={`field-${index}`} className="sr-only">
-                    Field {index + 1}
+                  Field {index + 1}
                 </Label>
                 <Input
-                    id={`field-${index}`}
-                    value={field}
-                    onChange={(e) => handleAdditionalFields(index, e.target.value)}
-                    placeholder={`Enter additional questions here`}
+                  id={`field-${index}`}
+                  value={field}
+                  onChange={(e) => handleAdditionalFields(index, e.target.value)}
+                  placeholder={`Enter additional questions here`}
                 />
                 {index > 0 && (
-                    <Button
+                  <Button
                     type="button"
                     variant="ghost"
                     size="icon"
                     onClick={() => removeField(index)}
-                    >
+                  >
                     <X className="h-4 w-4" />
-                    </Button>
+                  </Button>
                 )}
-                </div>
+              </div>
             ))}
           </div>
           <Button
@@ -156,6 +182,15 @@ export function JobInfoForm() {
           <Button type="submit" className="w-full">Submit</Button>
         </CardFooter>
       </form>
+
+      {uid && (
+        <CardContent className="mt-4">
+          <p>Your interview ID is: <strong>{uid}</strong></p>
+          <p>
+            Access it at: <a href={`${window.location.origin}/interviews/${uid}`} className="text-blue-500">{`${window.location.origin}/interviews/${uid}`}</a>
+          </p>
+        </CardContent>
+      )}
     </Card>
   )
 }
