@@ -29,7 +29,7 @@ export default function ClientComponent({
   useEffect(() => {
     const fetchInterviewDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/questions/${uid}`);
+        const response = await fetch(`https://newhire-backend.onrender.com/questions/${uid}`);
         if (response.ok) {
           const data = await response.json();
           setInterviewData({
