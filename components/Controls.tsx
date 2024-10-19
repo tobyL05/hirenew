@@ -8,11 +8,52 @@ import MicFFT from "./MicFFT";
 import { cn } from "@/utils";
 import useWebcam from "@/utils/useWebcam";
 import useMessages from "@/utils/useMessages";
+import useExpressions from "@/utils/useExpressions";
+
+interface cleaned_message {
+  type: string
+  message: string
+}
 
 export default function Controls() {
   const { disconnect, status, isMuted, unmute, mute, micFft } = useVoice();
   const { stopWebcam } = useWebcam()
-  const { sendMessages } = useMessages()
+  const { messages } = useVoice()
+
+  async function sendMessages() {
+    const cleanedMsgs: cleaned_message[] = []
+    console.log(messages);
+    const messagesFiltered = messages.filter((msg) => msg.type === "user_message" || msg.type === "assistant_message")
+    console.log(messagesFiltered)
+    console.log(messagesFiltered[0]);
+    let prevmsg = messagesFiltered[0]
+    let currmsg: string = prevmsg.message.content!
+    for (let i = 1;i < messagesFiltered.length; i++) {
+      if (messagesFiltered[i].type === prevmsg.type) {
+        currmsg += " " + messagesFiltered[i].message.content
+      } else {
+        cleanedMsgs.push({
+          type: prevmsg.type,
+          message: prevmsg.message.content!
+        })
+        prevmsg = messagesFiltered[i]
+        currmsg = prevmsg.message.content!
+      }
+    }
+    cleanedMsgs.push({
+      type: prevmsg.type,
+      message: prevmsg.message.content!
+    })
+    cleanedMsgs.forEach((msg) => {
+      console.log(msg.message);
+    })
+
+    // send cleanedMsgs to backend
+  }
+
+  async function sendExpressions() {
+    console.log(getExpressions())
+  }
 
   return (
     <div
@@ -65,9 +106,10 @@ export default function Controls() {
               className={"flex items-center gap-1"}
               onClick={async () => {
                 console.log("hello")
-                stopWebcam(); // not working???
+                stopWebcam();
                 disconnect();
-                await sendMessages();
+                sendMessages();
+                sendExpressions();
               }}
               variant={"destructive"}
             >

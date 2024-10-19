@@ -7,11 +7,13 @@ import { useVoice } from '@humeai/voice-react'
 import { stat } from 'fs'
 import useWebcam from '@/utils/useWebcam'
 import useExpressions from '@/utils/useExpressions'
+import useMessages from '@/utils/useMessages'
 
 export function VideoChat() {
   const [error, setError] = useState<string | null>(null)
   const { messages } = useVoice()
-  const { getCurrentExpression } = useExpressions();
+  const { addMessage } = useMessages()
+  const { getCurrentExpression } = useExpressions()
   const { videoRef, isStreamActive, startWebcam, stopWebcam } = useWebcam()
 
 
@@ -24,6 +26,7 @@ export function VideoChat() {
 
   useEffect(() => {
     if (messages) {
+        addMessage(messages[messages.length-1])
         getCurrentExpression(messages[messages.length - 1])
     }
   },[messages])

@@ -1,16 +1,22 @@
 import { useState, useEffect, useRef } from 'react'
 
 const useWebcam = () => {
+  const [stream, setStream] = useState<MediaStream>()
   const [isStreamActive, setIsStreamActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)  // Using ref to store the stream
+
 
   const startWebcam = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true })
       if (videoRef.current) {
+        console.log("set stream")
         videoRef.current.srcObject = stream
+        streamRef.current = stream
         setIsStreamActive(true)
+        // console.log(stream)
         setError(null)
       }
     } catch (err) {
@@ -20,12 +26,13 @@ const useWebcam = () => {
   }
 
   const stopWebcam = () => {
-    console.log(videoRef.current)
-    if (videoRef.current && videoRef.current.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks()
+    const stream = streamRef.current // Access the stream from ref
+    if (stream) {
+      const tracks = stream.getTracks()
       tracks.forEach(track => track.stop())
-      videoRef.current.srcObject = null
       setIsStreamActive(false)
+    } else {
+      console.error("No stream found to stop")
     }
   }
 

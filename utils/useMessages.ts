@@ -5,11 +5,12 @@ const useMessages = () => {
     const [messages, setMessages] = useState<(JSONMessage | ConnectionMessage)[]>([])
 
     const addMessage = (message: JSONMessage | ConnectionMessage) => {
-        setMessages([...messages,message])
+        setMessages((prevmsgs) => [...prevmsgs,message])
     }
 
     const sendMessages = async () => {
         console.log("sendMessages")
+        console.log(messages)
         messages.forEach((msg) => {
             console.log(msg)
         })

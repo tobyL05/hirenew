@@ -2,9 +2,10 @@ import { ConnectionMessage, JSONMessage } from "@humeai/voice-react"
 import * as R from "remeda";
 
 const useExpressions = () => {
+    const expressions = new Map(); 
 
     const getCurrentExpression = (message: JSONMessage | ConnectionMessage) => {
-        if (message && message.type === "assistant_message") {
+        if (message && message.type === "user_message") {
             const values = message.models.prosody?.scores
             if (!values) return;
 
@@ -17,12 +18,16 @@ const useExpressions = () => {
             );
 
             top3.map(([key, value]) => {
-                console.log(key);
-                console.log(value);
-                console.log();
+                if (expressions.has(key)) {
+                    let prev = expressions.get(key)
+                    prev.push(value)
+                    expressions.set(key,prev)
+                } else {
+                    expressions.set(key, [value])
+                }
             })
-            
-            // send expression to backend for processing
+
+            // send expressions to backend somehow. process here first (take avg)?
         }
     }
 
