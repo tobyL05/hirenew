@@ -7,8 +7,6 @@ import { Toggle } from "./ui/toggle";
 import MicFFT from "./MicFFT";
 import { cn } from "@/utils";
 import useWebcam from "@/utils/useWebcam";
-import useMessages from "@/utils/useMessages";
-import useExpressions from "@/utils/useExpressions";
 
 interface cleaned_message {
   type: string
@@ -105,7 +103,6 @@ export default function Controls() {
                 stopWebcam();
                 disconnect();
                 sendMessages();
-                sendExpressions();
               }}
               variant={"destructive"}
             >
