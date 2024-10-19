@@ -2,9 +2,9 @@ import { useVoice } from "@humeai/voice-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { Phone } from "lucide-react";
-import { useEffect } from "react";
 
-export default function StartCall() {
+const InterviewStart = ({ company_name, role }: { company_name: string; role: string }) => {
+
   const { status, connect } = useVoice();
 
   return (
@@ -24,7 +24,7 @@ export default function StartCall() {
           }}
         >
           <div className="flex flex-col align-middle items-center justify-around space-y-4">
-            <h1 className="w-full text-center text-primary text-xl">Welcome to hirenew, you're AI interviewer. You are currently interviewing for (role name here) at (company name here)</h1>
+            <h1 className="w-full text-center text-primary text-xl">Welcome to hirenew, you are AI interviewer. You are currently interviewing for {role} at {company_name}</h1>
             <AnimatePresence>
               <motion.div
                 variants={{
@@ -58,3 +58,5 @@ export default function StartCall() {
     </AnimatePresence>
   );
 }
+
+export default InterviewStart;
