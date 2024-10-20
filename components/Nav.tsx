@@ -32,7 +32,7 @@ export const Nav = () => {
       }
     >
       <div>
-        <h1 className="text-xl cursor-pointer" onClick={() => router.push("/")}>hire_new</h1>
+        <h1 className="text-xl cursor-pointer" onClick={() => router.push("/")}>candidate_compare</h1>
       </div>
       <div className={"ml-auto flex items-center gap-1"}>
         <Button

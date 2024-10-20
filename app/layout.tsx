@@ -6,7 +6,7 @@ import { Nav } from "@/components/Nav";
 import { cn } from "@/utils";
 
 export const metadata: Metadata = {
-  title: "Hume AI - EVI - Next.js Starter",
+  title: "hire_new",
   description: "A Next.js starter using Hume AI's Empathic Voice Interface",
 };
 

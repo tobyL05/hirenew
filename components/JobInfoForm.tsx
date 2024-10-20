@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { PlusCircle, X } from 'lucide-react'
+import { useAddUserStore } from '@/stores/useAddUserStore'
 
 interface FormData {
   name: string
@@ -31,6 +32,7 @@ export function JobInfoForm() {
   })
 
   const [uid, setUid] = useState<string | null>(null) // For showing UID response
+  const addUser = useAddUserStore((state) => state.addUser)
 
   const addField = () => { setFields([...fields, ''])
   }
@@ -73,6 +75,36 @@ export function JobInfoForm() {
       questions: concatenatedQs
     }
 
+    addUser({
+        name: formData.name,
+        company: formData.companyName,
+        role: formData.jobTitle,
+        job_desc: formData.jobDescription,
+        evaluation: "",
+        interview_record: "",
+        transcript: ""
+    })
+
+    // const regex = /https:\/\/www\.linkedin\.com\/in\/([a-zA-Z0-9_-]+)\/?/;
+  
+    // // Test the URL and extract the profile ID if it matches
+    // const match = url.match(regex);
+    
+    // Return the profile ID or null if no match is found
+    // return match ? match[1] : null;
+    const liregex = /https:\/\/www\.linkedin\.com\/in\/([a-zA-Z0-9_-]+)\/?/;
+    console.log("LI",liregex)
+    const linkedinid = formData.LinkedInProfile.match(liregex)![1];
+    const ghregex = /https:\/\/github\.com\/([a-zA-Z0-9_-]+)\/?/;
+    const ghid = formData.GitHubProfile.match(ghregex)![1];
+
+    
+    const payload2 = {
+        "cid": formData.name,
+        "linkedin": linkedinid,
+        "github": ghid
+    }
+
     try {
       const response = await fetch('http://localhost:3001/questions', {
         method: 'POST',
@@ -81,15 +113,15 @@ export function JobInfoForm() {
         },
         body: JSON.stringify(payload)
       })
-      // const response = await fetch('https://newhire-backend.onrender.com/questions', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(payload)
-      // })
-
       const result = await response.json()
+
+      await fetch('http://127.0.0.1:5000/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload2)
+      })
 
       if (response.ok) {
         // Store the returned UID and show it to the user

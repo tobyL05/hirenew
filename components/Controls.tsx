@@ -98,7 +98,7 @@ export default function Controls() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          uid: uid,  // null???????
+          uid: uid, 
           interviewRecord: cleanedMsgs,  
           expressions: expressions 
         }),
