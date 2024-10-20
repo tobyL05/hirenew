@@ -8,6 +8,7 @@ import MicFFT from "./MicFFT";
 import { cn } from "@/utils";
 import useWebcam from "@/utils/useWebcam";
 import * as R from "remeda"
+import { useUidStore } from "@/stores/useUidStore";
 
 interface cleaned_message {
   type: string
@@ -18,6 +19,7 @@ export default function Controls() {
   const { disconnect, status, isMuted, unmute, mute, micFft } = useVoice();
   const { stopWebcam } = useWebcam()
   const { messages } = useVoice()
+  const uid = useUidStore((state) => state.uid)
 
   async function sendMessages() {
     const cleanedMsgs: cleaned_message[] = []
@@ -51,6 +53,7 @@ export default function Controls() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          uid: uid,
           interviewRecord: cleanedMsgs,  // Pass the cleaned messages as the interview record
         }),
       });

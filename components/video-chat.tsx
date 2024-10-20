@@ -1,34 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useVoice } from '@humeai/voice-react'
 import useWebcam from '@/utils/useWebcam'
-import useExpressions from '@/utils/useExpressions'
-import useMessages from '@/utils/useMessages'
 
 export function VideoChat() {
   const [error, setError] = useState<string | null>(null)
-  const { messages } = useVoice()
-  const { addMessage } = useMessages()
-//   const { getCurrentExpression } = useExpressions()
   const { videoRef, isStreamActive, startWebcam, stopWebcam } = useWebcam()
-
-
-//   useEffect(() => {
-    // startWebcam() // works
-    // return () => {
-    //   stopWebcam()
-    // }
-//   }, [])
-
-  useEffect(() => {
-    if (messages) {
-        addMessage(messages[messages.length-1])
-        // getCurrentExpression(messages[messages.length - 1])
-    }
-  },[messages])
 
   return (
     <Card className="w-full max-w-4xl mx-auto mt-32">

@@ -7,6 +7,7 @@ import StartCall from "./StartCall";
 import { useEffect, useState, useRef, ComponentRef } from "react";
 import { VideoChat } from "./video-chat";
 import { useRouter } from "next/navigation"
+import { useUidStore } from "@/stores/useUidStore";
 
 export default function ClientComponent({
   accessToken,
@@ -16,8 +17,7 @@ export default function ClientComponent({
   uid:string;
 }) {
   const router = useRouter()
-  const timeout = useRef<number | null>(null);
-  const ref = useRef<ComponentRef<typeof Messages> | null>(null);
+  const setUid = useUidStore((state) => state.setUid)
 
   const [interviewData, setInterviewData] = useState({
     name: "",
@@ -29,6 +29,7 @@ export default function ClientComponent({
   const [loading, setLoading] = useState(true); // Loading state to stall rendering
 
   useEffect(() => {
+    setUid(uid)
     const fetchInterviewDetails = async () => {
       try {
         const response = await fetch(`https://newhire-backend.onrender.com/questions/${uid}`);
@@ -100,6 +101,10 @@ export default function ClientComponent({
       <VoiceProvider
         auth={{ type: "accessToken", value: accessToken }}
         configId={process.env.NEXT_PUBLIC_HUME_CONFIG_ID}
+        onClose={(e) => {
+          console.log(e)
+
+        }}
         sessionSettings={{
             type: "session_settings",
             variables: {
