@@ -18,7 +18,7 @@ export default function Page() {
                 </Button>
                 <div className="flex flex-col align-middle items-center">
                     <Button
-                        onClick={() => {}} 
+                        onClick={() => router.push("/recruiter-view")} 
                     >
                         <span>view interviews</span>
                     </Button>
