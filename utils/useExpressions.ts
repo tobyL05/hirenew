@@ -34,7 +34,11 @@ const useExpressions = () => {
         }
     }
 
-    return { expressions, getCurrentExpression }
+    const sendExpressions = () => {
+        console.log(expressions)
+    }
+
+    return { sendExpressions, getCurrentExpression }
 
 }
 

@@ -13,6 +13,8 @@ interface FormData {
   jobTitle: string
   jobDescription: string
   companyName: string
+  LinkedInProfile: string
+  GitHubProfile: string
   additionalQs: string[]
 }
 
@@ -23,6 +25,8 @@ export function JobInfoForm() {
     jobTitle: '',
     jobDescription: '',
     companyName: '',
+    LinkedInProfile: '',
+    GitHubProfile: '',
     additionalQs: ['']
   })
 
@@ -142,6 +146,30 @@ export function JobInfoForm() {
               required
               className="w-full"
             />
+            </div>
+          <div className="space-y-2">
+            <Label htmlFor="LinkedInProfile">Candidate LinkedIn Profile</Label>
+            <Input
+              id="LinkedinProfile"
+              name="LinkedinProfile"
+              value={formData.LinkedInProfile}
+              onChange={handleChange}
+              placeholder="Enter the candidate's LinkedIn Profile"
+              required
+              className="w-full"
+            />
+          <div className="space-y-2">
+            <Label htmlFor="GitHubProfile">Candidate GitHub Profile</Label>
+            <Input
+              id="GitHubProfile"
+              name="GitHubProfile"
+              value={formData.GitHubProfile}
+              onChange={handleChange}
+              placeholder="Enter your company name"
+              required
+              className="w-full"
+            />
+            </div>
             <br></br>
             <Label>Additional Questions</Label>
             {fields.map((field, index) => (

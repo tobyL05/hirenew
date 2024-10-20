@@ -1,12 +1,12 @@
 "use client";
 
-import { useVoice, VoiceProvider } from "@humeai/voice-react";
+import { ToolCallHandler, VoiceProvider } from "@humeai/voice-react";
 import Messages from "./Messages";
 import Controls from "./Controls";
 import StartCall from "./StartCall";
 import { useEffect, useState, useRef, ComponentRef } from "react";
 import { VideoChat } from "./video-chat";
-import { sysPrompt } from "@/content";
+import { useRouter } from "next/navigation"
 
 export default function ClientComponent({
   accessToken,
@@ -15,6 +15,7 @@ export default function ClientComponent({
   accessToken: string;
   uid:string;
 }) {
+  const router = useRouter()
   const timeout = useRef<number | null>(null);
   const ref = useRef<ComponentRef<typeof Messages> | null>(null);
 
@@ -43,10 +44,12 @@ export default function ClientComponent({
           setLoading(false);
         } else {
           console.error("Failed to fetch interview details");
+          router.push("/Error") 
           setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching interview details:", error);
+        router.push("/Error")
         setLoading(false);
       }
     };
@@ -54,9 +57,39 @@ export default function ClientComponent({
     fetchInterviewDetails();
   }, [uid]);
 
-//   if (loading) {
-//     return <div>Loading interview details...</div>;
-//   }
+    const handleToolCall: ToolCallHandler = async (message, send) => {
+        if (message.name === "verifier") {
+            try {
+                const response = await fetch('/api/verifier', {
+                    method: "POST",
+                    headers: {'Content-Type': "application/json"},
+                    body: JSON.stringify({ parameters: message.parameters }),
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    return send.success(result.data)
+                } else {
+                    return send.error(result.data)
+                }
+            } catch (error) {
+                return send.error({
+                    error: 'verifier_error',
+                    code: 'verifier_error',
+                    level: 'warn',
+                    content: 'An error occurred during verification',
+                    });
+            }
+        }
+        return send.error({
+            error: 'Tool not found',
+            code: 'tool_not_found',
+            level: 'warn',
+            content: 'The tool you requested was not found',
+        });
+    }
+
 
   return (
     <div
@@ -69,8 +102,6 @@ export default function ClientComponent({
         configId={process.env.NEXT_PUBLIC_HUME_CONFIG_ID}
         sessionSettings={{
             type: "session_settings",
-            // generate a systemprompt later
-            systemPrompt: sysPrompt,
             variables: {
                 name: interviewData.name,
                 role: interviewData.role,
@@ -79,9 +110,7 @@ export default function ClientComponent({
                 job_description: interviewData.job_description
             }
         }}
-        onMessage={() => {
-
-        }}
+        onToolCall={handleToolCall}
       >
         <VideoChat />
         {/* <Messages ref={ref} /> */}

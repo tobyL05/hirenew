@@ -7,7 +7,7 @@ import { Toggle } from "./ui/toggle";
 import MicFFT from "./MicFFT";
 import { cn } from "@/utils";
 import useWebcam from "@/utils/useWebcam";
-import useExpressions from "@/utils/useExpressions";
+import * as R from "remeda"
 
 interface cleaned_message {
   type: string
@@ -18,7 +18,6 @@ export default function Controls() {
   const { disconnect, status, isMuted, unmute, mute, micFft } = useVoice();
   const { stopWebcam } = useWebcam()
   const { messages } = useVoice()
-  const { expressions } = useExpressions()
 
   async function sendMessages() {
     const cleanedMsgs: cleaned_message[] = []
@@ -44,7 +43,6 @@ export default function Controls() {
       type: prevmsg.type,
       message: prevmsg.message.content!
     })
-    // console.log(cleanedMsgs)
 
     try {
       const response = await fetch('https://newhire-backend.onrender.com/interviewRecord', {
@@ -69,9 +67,32 @@ export default function Controls() {
   }
 
   async function sendExpressions() {
+    const expressions = new Map()
+    messages.map((msg) => {
+        if (msg && msg.type === "user_message") {
+            const values = msg.models.prosody?.scores
+            if (!values) return;
+
+            const top3 = R.pipe(
+                values,
+                R.entries(),
+                R.sortBy(R.pathOr([1], 0)),
+                R.reverse(),
+                R.take(3),
+            );
+
+            top3.forEach(([key, value]) => {
+                if (expressions.has(key)) {
+                    let prev = expressions.get(key) || [];
+                    prev.push(value);
+                    expressions.set(key, prev);
+                } else {
+                    expressions.set(key, [value]);
+                }
+            });
+        }
+    })
     console.log(expressions)
-     
-    // send expressions to backend
   }
 
   return (
@@ -127,7 +148,7 @@ export default function Controls() {
                 stopWebcam();
                 disconnect();
                 sendMessages();
-                sendExpressions()
+                sendExpressions();
               }}
               variant={"destructive"}
             >
