@@ -24,7 +24,7 @@ const InterviewStart = ({ company_name, role }: { company_name: string; role: st
           }}
         >
           <div className="flex flex-col align-middle items-center justify-around space-y-4">
-            <h1 className="w-full text-center text-primary text-xl">Welcome to hirenew, you are AI interviewer. You are currently interviewing for {role} at {company_name}</h1>
+            <h1 className="w-full text-center text-primary text-xl">Welcome to hire_new, your AI interviewer. You are currently interviewing for {role} at {company_name}</h1>
             <AnimatePresence>
               <motion.div
                 variants={{

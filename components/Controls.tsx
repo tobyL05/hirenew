@@ -21,7 +21,7 @@ export default function Controls() {
   const { messages } = useVoice()
   const uid = useUidStore((state) => state.uid)
 
-  async function sendMessages() {
+  function sendMessages() {
     const cleanedMsgs: cleaned_message[] = []
     console.log(messages);
     const messagesFiltered = messages.filter((msg) => msg.type === "user_message" || msg.type === "assistant_message")
@@ -45,32 +45,11 @@ export default function Controls() {
       type: prevmsg.type,
       message: prevmsg.message.content!
     })
-
-    try {
-      const response = await fetch('https://newhire-backend.onrender.com/interviewRecord', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          uid: uid,
-          interviewRecord: cleanedMsgs,  // Pass the cleaned messages as the interview record
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send interview record');
-      }
-
-      const data = await response.json();
-      console.log('Interview record sent successfully:', data);
-    } catch (error) {
-      console.error('Error sending messages:', error);
-    }
+    return cleanedMsgs
   }
 
-  async function sendExpressions() {
-    const expressions = new Map()
+  function sendExpressions() {
+    let expressions = new Map()
     messages.map((msg) => {
         if (msg && msg.type === "user_message") {
             const values = msg.models.prosody?.scores
@@ -93,9 +72,49 @@ export default function Controls() {
                     expressions.set(key, [value]);
                 }
             });
-        }
+          }
     })
-    console.log(expressions)
+    // Convert the map to an array of [key, value] pairs
+    const entriesArray = Array.from(expressions.entries());
+
+    // Sort the array by value in descending order
+    const sortedEntries = entriesArray.sort((a, b) => b[1] - a[1]);
+
+    // Get the top 3 entries
+    const top3 = sortedEntries.slice(0, 3);
+
+    return top3;
+
+  }
+
+  async function save() {
+    const cleanedMsgs = sendMessages();
+    const expressions = sendExpressions();
+    console.log(uid) // null here
+    try {
+        const response = await fetch('http://localhost:3001/interviewRecord', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: uid,  // null???????
+          interviewRecord: cleanedMsgs,  
+          expressions: expressions 
+        }),
+      });
+
+      console.log("Saving interview")
+
+      if (!response.ok) {
+        throw new Error('Failed to send interview record');
+      }
+
+      const data = await response.json();
+      console.log('Interview record sent successfully:', data);
+    } catch (error) {
+      console.error('Error sending messages:', error);
+    }
   }
 
   return (
@@ -147,11 +166,10 @@ export default function Controls() {
 
             <Button
               className={"flex items-center gap-1"}
-              onClick={() => {
+              onClick={async () => {
                 stopWebcam();
                 disconnect();
-                sendMessages();
-                sendExpressions();
+                await save()
               }}
               variant={"destructive"}
             >

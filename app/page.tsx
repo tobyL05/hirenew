@@ -19,11 +19,9 @@ export default function Page() {
                 <div className="flex flex-col align-middle items-center">
                     <Button
                         onClick={() => {}} 
-                        disabled
                     >
-                        <span>view pending interviews</span>
+                        <span>view interviews</span>
                     </Button>
-                    <label className="text-sm">coming soon!</label>
                 </div>
             </div>
         </div>

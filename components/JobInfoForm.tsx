@@ -56,6 +56,7 @@ export function JobInfoForm() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("submit")
     e.preventDefault()
 
     // Concatenate additional questions
@@ -67,17 +68,26 @@ export function JobInfoForm() {
       role: formData.jobTitle,
       jobDescription: formData.jobDescription,
       company: formData.companyName,
+      linkedinProfile: formData.LinkedInProfile,
+      githubProfile: formData.GitHubProfile,
       questions: concatenatedQs
     }
 
     try {
-      const response = await fetch('https://newhire-backend.onrender.com/questions', {
+      const response = await fetch('http://localhost:3001/questions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       })
+      // const response = await fetch('https://newhire-backend.onrender.com/questions', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(payload)
+      // })
 
       const result = await response.json()
 
@@ -150,8 +160,8 @@ export function JobInfoForm() {
           <div className="space-y-2">
             <Label htmlFor="LinkedInProfile">Candidate LinkedIn Profile</Label>
             <Input
-              id="LinkedinProfile"
-              name="LinkedinProfile"
+              id="LinkedInProfile"
+              name="LinkedInProfile"
               value={formData.LinkedInProfile}
               onChange={handleChange}
               placeholder="Enter the candidate's LinkedIn Profile"

@@ -7,5 +7,5 @@ interface UIDStore {
 
 export const useUidStore = create<UIDStore>((set) => ({
     uid: "",
-    setUid: () => set((state: UIDStore) => ({ uid: state.uid})),
-  }))
+    setUid: (newUid: string) => set({ uid: newUid }), // Correctly sets the new uid
+}))
